@@ -1,0 +1,163 @@
+﻿@{
+    ViewData["Title"] = "Home Page2";
+}
+
+
+
+@section Scripts
+{
+
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTkFt7cmxsdUNWI2iztBrYIhoWCyjSCw4&callback=initialize" async="" defer="defer" type="text/javascript"></script>
+    <script type="text/javascript">
+
+
+        function initialize(lat, long) {
+
+            var user = [41.007181, 28.915165]
+            var courier = [lat,long]
+            var distributingCenter = [41.009337, 28.918427]
+
+            var latAvg = Math.abs((user[0] - courier[0]));
+            var longAvg = Math.abs((user[1] - courier[1]));
+
+            var zoomFunc = getCenterPosition(latAvg, longAvg);
+
+            function getCenterPosition(latOrt, longOrt) {
+
+                var maxdifference = (latOrt > longOrt) ? latOrt : longOrt;
+                var zoomvalue;
+                if (maxdifference >= 0 && maxdifference <= 0.0037)
+                    zoomvalue = '17';
+                else if (maxdifference > 0.0037 && maxdifference <= 0.0070)
+                    zoomvalue = '16';
+                else if (maxdifference > 0.0070 && maxdifference <= 0.0130)
+                    zoomvalue = '15';
+                else if (maxdifference > 0.0130 && maxdifference <= 0.0290)
+                    zoomvalue = '14';
+                else if (maxdifference > 0.0290 && maxdifference <= 0.0550)
+                    zoomvalue = '13';
+                else if (maxdifference > 0.0550 && maxdifference <= 0.1200)
+                    zoomvalue = '12';
+                else if (maxdifference > 0.1200 && maxdifference <= 0.4640)
+                    zoomvalue = '10';
+                else if (maxdifference > 0.4640 && maxdifference <= 1.8580)
+                    zoomvalue = '8';
+                else if (maxdifference > 1.8580 && maxdifference <= 3.5310)
+                    zoomvalue = '7';
+                else if (maxdifference > 3.5310 && maxdifference <= 7.3367)
+                    zoomvalue = '6';
+                else if (maxdifference > 7.3367 && maxdifference <= 14.222)
+                    zoomvalue = '5';
+                else if (maxdifference > 14.222 && maxdifference <= 28.000)
+                    zoomvalue = '4';
+                else if (maxdifference > 28.000 && maxdifference <= 58.000)
+                    zoomvalue = '3';
+                else
+                    zoomvalue = '1';
+                return zoomvalue;
+            }
+
+         
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: parseInt(zoomFunc),
+                center: new google.maps.LatLng((user[0] + courier[0]) / 2, (user[1] + courier[1]) / 2),//kurye ve kullanıcı ortası
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            
+
+            const iconBase =
+                "https://localhost:5001/png/";
+            const icons = {
+                courierPng: {
+                    icon: iconBase + "courier.png",
+                },
+                userPng: {
+                    icon: iconBase + "home.png",
+                },
+                distributingCenterPng: {
+                    icon: iconBase + "pharmacy.png",
+                },
+            };
+            const features = [
+                {
+                    position: new google.maps.LatLng(courier[0], courier[1]),
+                    type: "courierPng",
+                },
+                {
+                    position: new google.maps.LatLng(user[0], user[1]),
+                    type: "userPng",
+                },
+                {
+                    position: new google.maps.LatLng(distributingCenter[0], distributingCenter[1]),
+                    type: "distributingCenterPng",
+                },
+            ];
+
+
+            // var infowindow = new google.maps.InfoWindow();
+
+
+            //var marker, i;
+
+            for (i = 0; i < features.length; i++) {
+                marker = new google.maps.Marker({
+                    position: features[i].position,
+                    icon: icons[features[i].type].icon,
+                    map: map
+                });
+               
+                //google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                //    return function () {
+                //        infowindow.setContent(features[i][0]);
+                //        infowindow.open(map, marker);
+                //    }
+                //})(marker, i));
+            }
+        }
+
+        //function loadScript(lat,longi) {
+        //    var script = document.createElement('script');
+        //    script.type = 'text/javascript';
+        //    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDTkFt7cmxsdUNWI2iztBrYIhoWCyjSCw4&sensor=false&' + 'callback=initialize';
+        //    document.body.appendChild(script);
+        //}
+
+       
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44386/PharmacyHub").build();//API url'im + /MyHub
+       
+        
+        connection.start()
+            .then(() => {
+                connection.invoke("addGroup", "sedat")//gruba ekleme işlemi burdan gerçekleşir
+                connection.invoke("GetLocation","sedat")//pharmacyhub
+                
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+        connection.on("apiClient", (latitude, longitude) => {// _service ile apiden çağırılan metotdur
+            initialize(latitude,longitude);
+            //loadScript();
+        });
+
+        connection.on("serverClient", (latitude, longitude) => {//hubdan direkt olarak istemci istek yaptığında çlışır
+            initialize(latitude, longitude);
+            //loadScript();
+        });
+
+    </script>
+}
+
+
+<div id="map" style="width: 1000px; height: 600px; position:center;"></div>
+
+
+
+
+
+
