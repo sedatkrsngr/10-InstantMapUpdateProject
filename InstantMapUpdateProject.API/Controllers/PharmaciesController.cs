@@ -35,6 +35,8 @@ namespace InstantMapUpdateProject.API.Controllers
             await _context.SaveChangesAsync();
 
             await _pharmacyService.GetLocation(courier);
+
+            //kullanıcının ve dağıtım adresininin de başlangı. latitude ve longitude değerleri gelmeli
             return Ok(courier);
         }
     }

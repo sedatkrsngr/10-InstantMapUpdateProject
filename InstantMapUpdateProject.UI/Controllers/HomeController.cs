@@ -22,14 +22,14 @@ namespace InstantMapUpdateProject.UI.Controllers
         public  IActionResult Index()
         {
 
-            var client = new MongoClient("mongodb://mobilhastanem:LA0osGIjo8E5f5JT@cluster0-shard-00-00.sqbuu.mongodb.net:27017,cluster0-shard-00-01.sqbuu.mongodb.net:27017,cluster0-shard-00-02.sqbuu.mongodb.net:27017/mh_log?ssl=true&replicaSet=atlas-m6behr-shard-0&authSource=admin&retryWrites=true&w=majority");
-            var database = client.GetDatabase("mh_chat");
+            //var client = new MongoClient("mongodb://mobilhastanem:LA0osGIjo8E5f5JT@cluster0-shard-00-00.sqbuu.mongodb.net:27017,cluster0-shard-00-01.sqbuu.mongodb.net:27017,cluster0-shard-00-02.sqbuu.mongodb.net:27017/mh_log?ssl=true&replicaSet=atlas-m6behr-shard-0&authSource=admin&retryWrites=true&w=majority");
+            //var database = client.GetDatabase("mh_chat");
 
-            var collection = database.GetCollection<ChatRoom>("chatrooms");
+            //var collection = database.GetCollection<ChatRoom>("chatrooms");
 
-            var data = collection.AsQueryable();
+            //var data = collection.AsQueryable();
 
-            var list = data.ToList();
+            //var list = data.ToList();
 
             return View();
         }
