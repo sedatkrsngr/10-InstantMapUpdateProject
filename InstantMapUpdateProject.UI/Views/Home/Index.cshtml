@@ -11,12 +11,12 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTkFt7cmxsdUNWI2iztBrYIhoWCyjSCw4&callback=initialize" async="" defer="defer" type="text/javascript"></script>
     <script type="text/javascript">
 
-        var user; //= [41.007181, 28.915165];
-        var distributingCenter;// = [41.009337, 28.918427];
+        var user;
+        var distributingCenter;
         var latAvg;
         var longAvg;
 
-        //var courier;// = [41.019337, 28.917427];
+        //var courier;
         var zoomFunc;
 
         var map;
@@ -66,7 +66,7 @@
 
             
             map = new google.maps.Map(document.getElementById('map'), {
-                center: new google.maps.LatLng(41,35),//kurye ve kullanıcı ortası
+                center: new google.maps.LatLng(41,35),//Başlangıç Türkiye Haritası
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 zoom: 6
             });
@@ -75,8 +75,7 @@
 
         //Markerların özellikleri ve haritaya eklenişi
         function setMarkers(courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi) {
-            const iconBase =
-                "https://localhost:5001/png/";
+            const iconBase = GetBaseUrlImg();
             const icons = {
                 courierPng: {
                     icon: iconBase + "courier.png",
@@ -135,7 +134,12 @@
             markers = [];
         }
 
+        function GetBaseUrlImg() {//resim yolu için
+            var getUrl = window.location;
 
+            var baseUrl = getUrl.origin + '/png/';
+            return baseUrl;//https://siteadresi/png/ şeklinde çıktı
+        }
 
 
 
@@ -157,27 +161,27 @@
 
             latAvg = Math.abs((user[0] - courierlati));
             longAvg = Math.abs((user[1] - courierlongi));
-            zoomLevel = getCenterPosition(latAvg, longAvg);
-            map.setZoom(parseInt(zoomLevel));
-            map.setCenter(new google.maps.LatLng((user[0] + courierlati) / 2, (user[1] + courierlongi) / 2));
+            zoomLevel = getCenterPosition(latAvg, longAvg);//dinamik zoom seviyesi
+            map.setZoom(parseInt(zoomLevel));//dinamik zoomlama
+            map.setCenter(new google.maps.LatLng((user[0] + courierlati) / 2, (user[1] + courierlongi) / 2));//dinamik harita Merkezi
 
             deleteMarkers();
-            setMarkers(courierlati, courierlongi, user[0], user[1], distributingCenter[0], distributingCenter[1]);
+            setMarkers(courierlati, courierlongi, user[0], user[1], distributingCenter[0], distributingCenter[1]);//markerları haritaya yerleştirme
            
         });
 
-        connection.on("serverClient", (courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi) => {//hubdan direkt olarak istemci istek yaptığında çlışır
+        connection.on("serverClient", (courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi) => {//hubdan direkt olarak istemci istek yaptığında çalışır
 
             latAvg = Math.abs((userlati - courierlati));
             longAvg = Math.abs((userlongi - courierlongi));
-            zoomLevel = getCenterPosition(latAvg, longAvg);
+            zoomLevel = getCenterPosition(latAvg, longAvg);//dinamik zoom seviyesi
 
             user = [userlati, userlongi];
             distributingCenter = [centerlati, centerlongi];
 
-            map.setZoom(parseInt(zoomLevel));
-            map.setCenter(new google.maps.LatLng((userlati + courierlati) / 2, (userlongi + courierlongi) / 2));
-            setMarkers(courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi);
+            map.setZoom(parseInt(zoomLevel));//dinamik zoomlama
+            map.setCenter(new google.maps.LatLng((userlati + courierlati) / 2, (userlongi + courierlongi) / 2));//dinamik harita Merkezi
+            setMarkers(courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi); // markerları haritaya yerleştirme
             
         });
 
