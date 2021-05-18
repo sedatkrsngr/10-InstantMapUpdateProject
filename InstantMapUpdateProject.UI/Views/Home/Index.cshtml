@@ -11,18 +11,20 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTkFt7cmxsdUNWI2iztBrYIhoWCyjSCw4&callback=initialize" async="" defer="defer" type="text/javascript"></script>
     <script type="text/javascript">
 
-        var user = [41.007181, 28.915165];
-
-        var distributingCenter = [41.009337, 28.918427];
-        var latAvg; 
+        var user; //= [41.007181, 28.915165];
+        var distributingCenter;// = [41.009337, 28.918427];
+        var latAvg;
         var longAvg;
-        var courier = [41.019337, 28.917427];
+
+        //var courier;// = [41.019337, 28.917427];
         var zoomFunc;
 
-        latAvg = Math.abs((user[0] - courier[0]));
-        longAvg = Math.abs((user[1] - courier[1]));
         var map;
-        var markers =[];
+        var markers = [];
+
+        //Functions
+
+        //Kurye ve kullanıcının tam ortası
         function getCenterPosition(latOrt, longOrt) {
 
             var maxdifference = (latOrt > longOrt) ? latOrt : longOrt;
@@ -59,19 +61,20 @@
         }
 
 
-        //
+        //Haritanın yüklenişi
         function initialize() {
 
-            zoomFunc = getCenterPosition(latAvg, longAvg);
-             map = new google.maps.Map(document.getElementById('map'), {
-                center: new google.maps.LatLng((user[0] + courier[0]) / 2, (user[1] + courier[1]) / 2),//kurye ve kullanıcı ortası
-                 mapTypeId: google.maps.MapTypeId.ROADMAP,
-                 zoom : parseInt(zoomFunc)
+            
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: new google.maps.LatLng(41,35),//kurye ve kullanıcı ortası
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                zoom: 6
             });
+
         }
 
-        //
-        function setMarkers(lati,longi) {
+        //Markerların özellikleri ve haritaya eklenişi
+        function setMarkers(courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi) {
             const iconBase =
                 "https://localhost:5001/png/";
             const icons = {
@@ -88,15 +91,15 @@
 
             const features = [
                 {
-                    position: new google.maps.LatLng(courier[0], courier[1]),
+                    position: new google.maps.LatLng(courierlati, courierlongi),
                     type: "courierPng",
                 },
                 {
-                    position: new google.maps.LatLng(lati, longi),
+                    position: new google.maps.LatLng(userlati, userlongi),
                     type: "userPng",
                 },
                 {
-                    position: new google.maps.LatLng(distributingCenter[0], distributingCenter[1]),
+                    position: new google.maps.LatLng(centerlati, centerlongi),
                     type: "distributingCenterPng",
                 },
             ];
@@ -112,51 +115,70 @@
             setMapOnAll(map);
         }
 
+        //Haritaya ekleme işlemi
         function setMapOnAll(map) {
             for (let i = 0; i < markers.length; i++) {
                 markers[i].setMap(map);
             }
         }
 
+        //Markerları temizlemek
         function clearMarkers() {
             for (var i = 0; i < markers.length; i++) {
                 setMapOnAll(null);
             }
         }
 
+        //Markerları silmek
         function deleteMarkers() {
             clearMarkers();
             markers = [];
         }
 
-       
+
 
 
 
         var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44386/PharmacyHub").build();//API url'im + /MyHub
-       
-        
+
+
         connection.start()
             .then(() => {
                 connection.invoke("addGroup", "sedat")//gruba ekleme işlemi burdan gerçekleşir
-                connection.invoke("GetLocation","sedat")//pharmacyhub
-                
+                connection.invoke("GetLocation", "sedat")//pharmacyhub
+
             })
             .catch((err) => {
                 console.log(err);
             });
 
-        connection.on("apiClient", (latitude, longitude) => {// _service ile apiden çağırılan metotdur
+        connection.on("apiClient", (courierlati, courierlongi) => {// _service ile apiden çağırılan metotdur
+
+
+            latAvg = Math.abs((user[0] - courierlati));
+            longAvg = Math.abs((user[1] - courierlongi));
+            zoomLevel = getCenterPosition(latAvg, longAvg);
+            map.setZoom(parseInt(zoomLevel));
+            map.setCenter(new google.maps.LatLng((user[0] + courierlati) / 2, (user[1] + courierlongi) / 2));
 
             deleteMarkers();
-            setMarkers(latitude, longitude);
-            //loadScript();
+            setMarkers(courierlati, courierlongi, user[0], user[1], distributingCenter[0], distributingCenter[1]);
+           
         });
 
-        connection.on("serverClient", (latitude, longitude) => {//hubdan direkt olarak istemci istek yaptığında çlışır
+        connection.on("serverClient", (courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi) => {//hubdan direkt olarak istemci istek yaptığında çlışır
+
+            latAvg = Math.abs((userlati - courierlati));
+            longAvg = Math.abs((userlongi - courierlongi));
+            zoomLevel = getCenterPosition(latAvg, longAvg);
+
+            user = [userlati, userlongi];
+            distributingCenter = [centerlati, centerlongi];
+
+            map.setZoom(parseInt(zoomLevel));
+            map.setCenter(new google.maps.LatLng((userlati + courierlati) / 2, (userlongi + courierlongi) / 2));
+            setMarkers(courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi);
             
-            setMarkers(latitude, longitude);
-            //loadScript();
         });
 
     </script>

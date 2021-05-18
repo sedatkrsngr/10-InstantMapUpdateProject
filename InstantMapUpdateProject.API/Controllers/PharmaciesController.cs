@@ -25,16 +25,22 @@ namespace InstantMapUpdateProject.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CourierLastLocation([FromBody]CourierLocation courier)
         {
+
+            await _pharmacyService.GetLocation(courier.courierLatitude, courier.courierLongitude, courier.RoomId);
+
             OrderFollowCoordinate order = new OrderFollowCoordinate();
-            order.Latitude = courier.Latitude;
-            order.Longitude = courier.Longitude;
+            order.courierLatitude = courier.courierLatitude;
+            order.courierLongitude = courier.courierLongitude;
+            order.userLatitude = courier.userLatitude;
+            order.userLongitude = courier.userLongitude;
+            order.centerLatitude = courier.centerLatitude;
+            order.centerLongitude = courier.centerLongitude;
             order.CourierId = courier.CourierId;
             order.RoomId = courier.RoomId;
 
             await _context.OrderFollowCoordinates.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            await _pharmacyService.GetLocation(courier);
 
             //kullanıcının ve dağıtım adresininin de başlangı. latitude ve longitude değerleri gelmeli
             return Ok(courier);

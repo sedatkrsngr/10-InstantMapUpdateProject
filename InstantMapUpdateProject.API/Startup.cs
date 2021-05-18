@@ -1,9 +1,11 @@
 using InstantMapUpdateProject.API.Hubs;
+using InstantMapUpdateProject.API.Models;
 using InstantMapUpdateProject.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,6 +35,9 @@ namespace InstantMapUpdateProject.API
                     builder.WithOrigins("https://localhost:5001").AllowAnyHeader().AllowAnyMethod().AllowCredentials();//UI url
                 });
             });
+            services.AddDbContext<UpdateMapContext>(optionsBuldier => optionsBuldier.UseSqlServer(Configuration.GetConnectionString("ConStr")));
+           // services.AddDbContextPool<UpdateMapContext>(options => options.UseSqlServer(Configuration.GetSection("ConnectionString")["ConStr"]));
+
             services.AddSignalR();
             services.AddScoped<PharmacyService>();
 

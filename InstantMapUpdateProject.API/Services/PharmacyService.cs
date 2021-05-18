@@ -16,11 +16,11 @@ namespace InstantMapUpdateProject.API.Services
         {
             _hubContext = hubContext;
         }
-        public async Task GetLocation(CourierLocation courier)//buradaki ile pharmacyhıbdaki aynı isimli ama birbirleri ile alakasız. Sadece aynı işlemi yapıyorlar diye. Biri apiden biri serverdan tetikleniyor
+        public async Task GetLocation(decimal? courierLati,decimal? courierLongi,string roomId)//buradaki ile pharmacyhıbdaki aynı isimli ama birbirleri ile alakasız. Sadece aynı işlemi yapıyorlar diye. Biri apiden biri serverdan tetikleniyor
         {
             //kaydetme işlemleri-> sonra çağırma
             //await Task.Delay(200);  //grup invoke işlemi oluştuğu için gereksiz.
-            await _hubContext.Clients.Group(courier.RoomId).SendAsync("apiClient", courier.Latitude,courier.Longitude);//tüm dinleyenlere son konumu göster
+            await _hubContext.Clients.Group(roomId).SendAsync("apiClient", courierLati, courierLongi);//tüm dinleyenlere son konumu göster
            
 
         }

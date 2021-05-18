@@ -12,20 +12,21 @@ namespace InstantMapUpdateProject.API.Hubs
 {
     public class PharmacyHub : Hub
     {
-        public UpdateMapContext _context = new UpdateMapContext();
+        private readonly UpdateMapContext _context;
 
         private readonly PharmacyService _service;
-        public PharmacyHub(PharmacyService service)
+        public PharmacyHub(PharmacyService service, UpdateMapContext context)
         {
             _service = service;
+            _context = context;
         }
 
         public async Task GetLocation(string grupName)//hub üzerinde olduğu için bu metodu invoke etmek gerekiyor
         {
             await Task.Delay(500);//gruba ekleme işlemi gerçekleştikten sonra hemen bu method çalışınca grup oluşmamış oluyor e istek gruptakilere gitmiyor. Bundan dolayı 0.5 sn bekleme süresi koydum
 
-            var lastCoordinate = _context.OrderFollowCoordinates.Where(o => o.RoomId == grupName).OrderByDescending(o=>o.Id).Take(1).FirstOrDefault();//en son konumu getir
-            await Clients.Group(grupName).SendAsync("serverClient",lastCoordinate.Latitude,lastCoordinate.Longitude );
+            var setCoordinate = _context.OrderFollowCoordinates.Where(o => o.RoomId == grupName).OrderByDescending(o=>o.Id).Take(1).FirstOrDefault();//en son konumu getir
+            await Clients.Group(grupName).SendAsync("serverClient",setCoordinate.courierLatitude,setCoordinate.courierLongitude,setCoordinate.userLatitude,setCoordinate.userLongitude,setCoordinate.centerLatitude,setCoordinate.centerLongitude );
 
         }
 

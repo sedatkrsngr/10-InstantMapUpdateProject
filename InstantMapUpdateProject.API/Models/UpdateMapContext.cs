@@ -21,13 +21,13 @@ namespace InstantMapUpdateProject.API.Models
         public virtual DbSet<OrderFollowCoordinate> OrderFollowCoordinates { get; set; }
         public virtual DbSet<OrderFollowRoom> OrderFollowRooms { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Initial Catalog=UpdateMap;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
-            }
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        optionsBuilder.UseSqlServer("Initial Catalog=UpdateMap;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -56,9 +56,9 @@ namespace InstantMapUpdateProject.API.Models
                     .ValueGeneratedOnAdd()
                     .HasColumnName("id");
 
-                entity.Property(e => e.Latitude).HasColumnType("decimal(9, 6)");
+                entity.Property(e => e.courierLatitude).HasColumnType("decimal(9, 6)");
 
-                entity.Property(e => e.Longitude).HasColumnType("decimal(9, 6)");
+                entity.Property(e => e.courierLongitude).HasColumnType("decimal(9, 6)");
 
                 entity.Property(e => e.RoomId).HasMaxLength(100);
             });
