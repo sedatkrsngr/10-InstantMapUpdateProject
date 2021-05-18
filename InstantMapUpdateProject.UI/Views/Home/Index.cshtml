@@ -29,34 +29,48 @@
 
             var maxdifference = (latOrt > longOrt) ? latOrt : longOrt;
             var zoomvalue;
-            if (maxdifference >= 0 && maxdifference <= 0.0037)
+            if (maxdifference >= 0 && maxdifference <= 0.00025)
+                zoomvalue = '20';
+            else if (maxdifference > 0.00025 && maxdifference <= 0.0005)
+                zoomvalue = '19';
+            else if (maxdifference > 0.0005 && maxdifference <= 0.001)
+                zoomvalue = '18';
+            else if (maxdifference > 0.001 && maxdifference <= 0.003)
                 zoomvalue = '17';
-            else if (maxdifference > 0.0037 && maxdifference <= 0.0070)
+            else if (maxdifference > 0.003 && maxdifference <= 0.005)
                 zoomvalue = '16';
-            else if (maxdifference > 0.0070 && maxdifference <= 0.0130)
+            else if (maxdifference > 0.005 && maxdifference <= 0.011)
                 zoomvalue = '15';
-            else if (maxdifference > 0.0130 && maxdifference <= 0.0290)
+            else if (maxdifference > 0.011 && maxdifference <= 0.022)
                 zoomvalue = '14';
-            else if (maxdifference > 0.0290 && maxdifference <= 0.0550)
+            else if (maxdifference > 0.022 && maxdifference <= 0.044)
                 zoomvalue = '13';
-            else if (maxdifference > 0.0550 && maxdifference <= 0.1200)
+            else if (maxdifference > 0.044 && maxdifference <= 0.088)
                 zoomvalue = '12';
-            else if (maxdifference > 0.1200 && maxdifference <= 0.4640)
+            else if (maxdifference > 0.088 && maxdifference <= 0.176)
+                zoomvalue = '11';
+            else if (maxdifference > 0.176 && maxdifference <= 0.352)
                 zoomvalue = '10';
-            else if (maxdifference > 0.4640 && maxdifference <= 1.8580)
+            else if (maxdifference > 0.352 && maxdifference <= 0.703)
+                zoomvalue = '9';
+            else if (maxdifference > 0.703 && maxdifference <= 1.406)
                 zoomvalue = '8';
-            else if (maxdifference > 1.8580 && maxdifference <= 3.5310)
+            else if (maxdifference > 1.406 && maxdifference <= 2.813)
                 zoomvalue = '7';
-            else if (maxdifference > 3.5310 && maxdifference <= 7.3367)
+            else if (maxdifference > 2.813 && maxdifference <= 5.625)
                 zoomvalue = '6';
-            else if (maxdifference > 7.3367 && maxdifference <= 14.222)
+            else if (maxdifference > 5.625 && maxdifference <= 11.25)
                 zoomvalue = '5';
-            else if (maxdifference > 14.222 && maxdifference <= 28.000)
+            else if (maxdifference > 11.25 && maxdifference <= 22.5)
                 zoomvalue = '4';
-            else if (maxdifference > 28.000 && maxdifference <= 58.000)
+            else if (maxdifference > 22.5 && maxdifference <= 45)
                 zoomvalue = '3';
-            else
+            else if (maxdifference > 45 && maxdifference <= 90)
+                zoomvalue = '2';
+            else if (maxdifference > 90 && maxdifference <= 180)
                 zoomvalue = '1';
+            else
+                zoomvalue = '0';
             return zoomvalue;
         }
 
