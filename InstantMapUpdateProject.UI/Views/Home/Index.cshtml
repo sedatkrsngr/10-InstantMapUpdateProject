@@ -80,9 +80,17 @@
 
             
             map = new google.maps.Map(document.getElementById('map'), {
-                center: new google.maps.LatLng(41,35),//Başlangıç Türkiye Haritası
+                center: new google.maps.LatLng(0, 0),//Başlangıç Türkiye Haritası
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
-                zoom: 6
+                zoom: 6,
+                restriction: {//Türkiye konumu
+                    latLngBounds: {
+                        north: 42,
+                        south: 36,
+                        east: 42,
+                        west: 26,
+                    },
+                }
             });
 
         }
@@ -90,23 +98,19 @@
         //Markerların özellikleri ve haritaya eklenişi
         function setMarkers(courierlati, courierlongi, userlati, userlongi, centerlati, centerlongi) {
             const iconBase = GetBaseUrlImg();
-            const icons = {
-                courierPng: {
-                    icon: iconBase + "courier.png",
-                },
+            const icons = {               
                 userPng: {
                     icon: iconBase + "home.png",
                 },
                 distributingCenterPng: {
                     icon: iconBase + "pharmacy.png",
                 },
+                courierPng: {
+                    icon: iconBase + "courier.png",
+                }
             };
 
-            const features = [
-                {
-                    position: new google.maps.LatLng(courierlati, courierlongi),
-                    type: "courierPng",
-                },
+            const features = [                
                 {
                     position: new google.maps.LatLng(userlati, userlongi),
                     type: "userPng",
@@ -115,6 +119,10 @@
                     position: new google.maps.LatLng(centerlati, centerlongi),
                     type: "distributingCenterPng",
                 },
+                {
+                    position: new google.maps.LatLng(courierlati, courierlongi),
+                    type: "courierPng",
+                }
             ];
 
             for (i = 0; i < features.length; i++) {
@@ -123,6 +131,7 @@
                     icon: icons[features[i].type].icon
                 });
                 markers.push(marker);
+               
             }
 
             setMapOnAll(map);
@@ -137,9 +146,9 @@
 
         //Markerları temizlemek
         function clearMarkers() {
-            for (var i = 0; i < markers.length; i++) {
+            //for (var i = 0; i < markers.length; i++) {
                 setMapOnAll(null);
-            }
+           // }
         }
 
         //Markerları silmek
